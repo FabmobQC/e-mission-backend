@@ -35,7 +35,7 @@ DEBUG = os.environ['DEBUG']
 # Remove on prod and use ALLOWED_HOSTS
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mamobilite.fabmobqc.ca', 'www.mamobilite.fabmobqc.ca', '159.203.62.159', 'localhost']
 
 
 # Application definition
@@ -131,6 +131,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
