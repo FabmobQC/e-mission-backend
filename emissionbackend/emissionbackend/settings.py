@@ -35,8 +35,10 @@ DEBUG = os.environ['DEBUG']
 # Remove on prod and use ALLOWED_HOSTS
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['mamobilite.fabmobqc.ca', 'www.mamobilite.fabmobqc.ca', '159.203.62.159', 'localhost']
+ALLOWED_HOSTS = ['mamobilite.fabmobqc.ca', 'www.mamobilite.fabmobqc.ca', '159.203.62.159', 'localhost', '127.0.0.1']
 
+if os.environ['DEV']:
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -49,7 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'projects'
+    'projects',
+    'api'
 ]
 
 MIDDLEWARE = [
