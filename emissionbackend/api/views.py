@@ -17,3 +17,10 @@ def getProjects(request):
         projects = Project.objects.all()
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def getProject(request, id):
+    if request.method == 'GET':
+        project = Project.objects.filter(id=id)
+        serializer = ProjectSerializer(project[0], many=False)
+        return Response(serializer.data)
