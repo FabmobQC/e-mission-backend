@@ -62,7 +62,7 @@ class Project(models.Model):
     name_en = models.CharField(max_length=250)
     server_url = models.URLField(max_length=200)
     timezone = models.CharField(max_length=10, choices=TIMEZONES)
-    main_form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="main_form")
+    main_form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="main_form", null=True, blank=True)
     daily_forms = models.ManyToManyField(Form, related_name="daily_forms")
     daily_notifications = models.ManyToManyField(Notification, related_name="daily_notifications")
 
