@@ -86,7 +86,7 @@ class ModeTranslation(models.Model):
     id = models.AutoField(primary_key=True)
     language = models.CharField(max_length=2, choices=LANGUAGES)
     value = models.CharField(max_length=200)
-    
+     
 class Mode(models.Model):
     id = models.AutoField(primary_key=True)
     mode_translations = models.ManyToManyField(ModeTranslation, related_name="mode_translations")
