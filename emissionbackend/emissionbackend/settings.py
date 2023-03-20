@@ -30,14 +30,14 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ['DEBUG']
+DEBUG = False if os.environ['DEBUG'] == '0' else True
 
 # Remove on prod and use ALLOWED_HOSTS
 CORS_ALLOW_ALL_ORIGINS = True
 
 ALLOWED_HOSTS = ['mamobilite.fabmobqc.ca', 'www.mamobilite.fabmobqc.ca', '159.203.62.159', 'localhost', '127.0.0.1']
 
-if os.environ['DEV']:
+if False if os.environ['DEBUG'] == '0' else True:
     ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -52,8 +52,15 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'projects',
-    'api'
+    'api',
+    'userprofile'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
