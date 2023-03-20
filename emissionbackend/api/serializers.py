@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from projects.models import Project, Form, FormURL, Notification, NotificationTitles, NotificationMessages
+from userprofile.models import UserProfile
 
 
 class NotificationMessagesSerializer(serializers.ModelSerializer):
@@ -48,4 +49,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
+        fields = '__all__'
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
         fields = '__all__'
