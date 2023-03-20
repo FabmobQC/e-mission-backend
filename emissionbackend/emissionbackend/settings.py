@@ -52,8 +52,15 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'projects',
-    'api'
+    'api',
+    'userprofile'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
