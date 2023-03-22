@@ -89,6 +89,7 @@ class ModeTranslation(models.Model):
      
 class Mode(models.Model):
     id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=250)
     mode_translations = models.ManyToManyField(ModeTranslation, related_name="mode_translations")
 
 class PurposeTranslation(models.Model):
@@ -98,6 +99,7 @@ class PurposeTranslation(models.Model):
 
 class Purpose(models.Model):
     id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=250)
     purpose_translations = models.ManyToManyField(PurposeTranslation, related_name="purpose_translations")
 
 class Project(models.Model):
