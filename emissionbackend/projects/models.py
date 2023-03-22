@@ -86,11 +86,15 @@ class ModeTranslation(models.Model):
     id = models.AutoField(primary_key=True)
     language = models.CharField(max_length=2, choices=LANGUAGES)
     value = models.CharField(max_length=200)
-     
+    def __str__(self):
+        return f'{str(self.language)}-{str(self.value)}'
+
 class Mode(models.Model):
     id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=250)
-    mode_translations = models.ManyToManyField(ModeTranslation, related_name="mode_translations")
+    label = models.CharField(max_length=250, null=True, blank=True)
+    texts = models.ManyToManyField(ModeTranslation, related_name="mode_translations")
+    def __str__(self):
+        return f'{str(self.label)}'
 
 class PurposeTranslation(models.Model):
     id = models.AutoField(primary_key=True)
@@ -99,8 +103,10 @@ class PurposeTranslation(models.Model):
 
 class Purpose(models.Model):
     id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=250)
-    purpose_translations = models.ManyToManyField(PurposeTranslation, related_name="purpose_translations")
+    label = models.CharField(max_length=250 , null=True, blank=True)
+    texts = models.ManyToManyField(PurposeTranslation, related_name="purpose_translations")
+    def __str__(self):
+        return f'{str(self.label)}'
 
 class Project(models.Model):
     id = models.AutoField(primary_key=True)
