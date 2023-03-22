@@ -6,6 +6,3 @@ __pycache__/
 db.sqlite3
 .env
 emissionbackend/.env
-emissionbackend/projects/migrations/*
-emissionbackend/projects/migrations/0006_auto_20230320_2159.py
-emissionbackend/projects/migrations/0005_auto_20230320_2154.py
