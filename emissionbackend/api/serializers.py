@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from projects.models import Project, Form, FormURL, Notification, NotificationTitles, NotificationMessages
+from projects.models import Project, Form, FormURL, Notification, NotificationTitles, NotificationMessages, Mode, ModeTranslation, Purpose, PurposeTranslation
 from userprofile.models import UserProfile
 
 
+#### Notifications ####
 class NotificationMessagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = NotificationMessages
@@ -13,7 +14,6 @@ class NotificationTitlesSerializer(serializers.ModelSerializer):
         model = NotificationTitles
         fields = '__all__'
 
-
 class NotificationSerializer(serializers.ModelSerializer):
 
     titles = NotificationTitlesSerializer(read_only=True, many=True)
@@ -23,6 +23,33 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = '__all__'
 
+#### Modes ####
+class ModeTranslationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModeTranslation
+        fields = '__all__'
+
+
+class ModesSerializer(serializers.ModelSerializer):
+    texts = ModeTranslationSerializer(read_only=True, many=True)
+    class Meta:
+        model = Mode
+        fields = '__all__'
+
+#### Purpose ####
+class PurposeTranslationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PurposeTranslation
+        fields = '__all__'
+
+
+class PurposeSerializer(serializers.ModelSerializer):
+    texts = PurposeTranslationSerializer(read_only=True, many=True)
+    class Meta:
+        model = Purpose
+        fields = '__all__'
+
+#### Forms ####
 class FormURLSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormURL
@@ -36,11 +63,14 @@ class FormSerializer(serializers.ModelSerializer):
         model = Form
         fields = '__all__'
 
+#### Projects ####
 class ProjectSerializer(serializers.ModelSerializer):
 
     main_form = FormSerializer()
     daily_forms = FormSerializer(read_only=True, many=True)
     daily_notifications = NotificationSerializer(read_only=True, many=True)
+    modes = ModesSerializer( many=True)
+    purposes = PurposeSerializer( many=True)
 
     timezone = serializers.SerializerMethodField()
 
@@ -52,6 +82,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+#### UserProfile ####
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
