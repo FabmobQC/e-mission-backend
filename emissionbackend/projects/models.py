@@ -148,8 +148,74 @@ class Project(models.Model):
         Notification, related_name="daily_notifications", blank=True)
     daily_emails = models.ManyToManyField(
         Email, related_name="daily_emails", blank=True)
-    modes = models.ManyToManyField(Mode, related_name="modes", blank=True)
-    purposes = models.ManyToManyField(Purpose, blank=True)
+    modes = models.ManyToManyField(
+        Mode, related_name="modes", blank=True, through='ProjectMode')
+    purposes = models.ManyToManyField(
+        Purpose, blank=True, through='ProjectPurpose')
 
     def __str__(self):
         return f'{str(self.id)}-{str(self.name_en)}'
+
+
+class ProjectModeManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().order_by('order')
+
+
+class ProjectMode(models.Model):
+    objects = ProjectModeManager()  # Override default manager.
+    project = models.ForeignKey(
+        Project,
+        verbose_name='Project',
+        help_text='Mode belongs to this projet',
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    mode = models.ForeignKey(
+        Mode,
+        verbose_name='Mode',
+        help_text='Mode belongs to this projet',
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    order = models.IntegerField(
+        verbose_name='Order',
+        help_text='What order to display this Mode within the project.',
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ('order',)
+
+
+class ProjectPurposeManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().order_by('order')
+
+
+class ProjectPurpose(models.Model):
+    objects = ProjectPurposeManager()  # Override default manager.
+    project = models.ForeignKey(
+        Project,
+        verbose_name='Project',
+        help_text='Purpose belongs to this projet',
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    purpose = models.ForeignKey(
+        Purpose,
+        verbose_name='Purpose',
+        help_text='Purpose belongs to this projet',
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    order = models.IntegerField(
+        verbose_name='Order',
+        help_text='What order to display this Purpose within the project.',
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ('order',)
