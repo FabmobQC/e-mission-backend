@@ -9,10 +9,12 @@ class NotificationMessagesSerializer(serializers.ModelSerializer):
         model = NotificationMessages
         fields = '__all__'
 
+
 class NotificationTitlesSerializer(serializers.ModelSerializer):
     class Meta:
         model = NotificationTitles
         fields = '__all__'
+
 
 class NotificationSerializer(serializers.ModelSerializer):
 
@@ -24,6 +26,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 #### Modes ####
+
+
 class ModeTranslationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModeTranslation
@@ -32,11 +36,14 @@ class ModeTranslationSerializer(serializers.ModelSerializer):
 
 class ModesSerializer(serializers.ModelSerializer):
     texts = ModeTranslationSerializer(read_only=True, many=True)
+
     class Meta:
         model = Mode
         fields = '__all__'
 
 #### Purpose ####
+
+
 class PurposeTranslationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurposeTranslation
@@ -45,15 +52,19 @@ class PurposeTranslationSerializer(serializers.ModelSerializer):
 
 class PurposeSerializer(serializers.ModelSerializer):
     texts = PurposeTranslationSerializer(read_only=True, many=True)
+
     class Meta:
         model = Purpose
         fields = '__all__'
 
 #### Forms ####
+
+
 class FormURLSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormURL
         fields = '__all__'
+
 
 class FormSerializer(serializers.ModelSerializer):
 
@@ -64,15 +75,25 @@ class FormSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 #### Projects ####
+
+
 class ProjectSerializer(serializers.ModelSerializer):
 
     main_form = FormSerializer()
     daily_forms = FormSerializer(read_only=True, many=True)
     daily_notifications = NotificationSerializer(read_only=True, many=True)
-    modes = ModesSerializer( many=True)
-    purposes = PurposeSerializer( many=True)
+    modes = serializers.SerializerMethodField()
+    purposes = serializers.SerializerMethodField()
 
     timezone = serializers.SerializerMethodField()
+
+    def get_modes(self, obj):
+        modes = obj.modes.all().order_by('projectmode__order')
+        return ModesSerializer(many=True, instance=modes).data
+
+    def get_purposes(self, obj):
+        purposes = obj.purposes.all().order_by('projectpurpose__order')
+        return PurposeSerializer(many=True, instance=purposes).data
 
     def get_timezone(self, obj):
         return obj.get_timezone_display()
