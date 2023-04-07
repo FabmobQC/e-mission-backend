@@ -85,6 +85,7 @@ class Email(models.Model):
     id = models.AutoField(primary_key=True)
     day = models.IntegerField(default=1)
     display_time = models.TimeField()
+    template_name = models.CharField(max_length=200, blank=True)
     subjects = models.ManyToManyField(
         EmailSubjects, related_name="notification_titles")
     messages = models.ManyToManyField(

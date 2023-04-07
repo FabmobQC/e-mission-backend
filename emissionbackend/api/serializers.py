@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from projects.models import Project, Form, FormURL, Notification, NotificationTitles, NotificationMessages, Mode, ModeTranslation, Purpose, PurposeTranslation
+from projects.models import Email, EmailSubjects, EmailMessages, Project, Form, FormURL, Notification, NotificationTitles, NotificationMessages, Mode, ModeTranslation, Purpose, PurposeTranslation
 from userprofile.models import UserProfile
 
 
@@ -74,6 +74,26 @@ class FormSerializer(serializers.ModelSerializer):
         model = Form
         fields = '__all__'
 
+#### Emails ####
+class EmailSubjectsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailSubjects
+        fields = '__all__'
+
+class EmailMessagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailMessages
+        fields = '__all__'
+
+class EmailSerializer(serializers.ModelSerializer):
+
+    subjects = EmailSubjectsSerializer(read_only=True, many=True)
+    messages = EmailMessagesSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Email
+        fields = '__all__'
+
 #### Projects ####
 
 
@@ -86,6 +106,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     purposes = serializers.SerializerMethodField()
 
     timezone = serializers.SerializerMethodField()
+    daily_emails = EmailSerializer(read_only=True, many=True)
 
     def get_modes(self, obj):
         modes = obj.modes.all().order_by('projectmode__order')
