@@ -89,7 +89,7 @@ class Email(models.Model):
     subjects = models.ManyToManyField(
         EmailSubjects, related_name="notification_titles")
     messages = models.ManyToManyField(
-        EmailMessages, related_name="notification_messages")
+        EmailMessages, related_name="notification_messages", blank=True)
 
     def __str__(self):
         return f'{str(self.day)}-{str(self.display_time)}-{str(self.subjects.all()[0])}'
