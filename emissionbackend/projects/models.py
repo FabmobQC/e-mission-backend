@@ -61,6 +61,18 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'{str(self.day)}-{str(self.display_time)}-{str(self.titles.all()[0])}'
+    
+class OnInstallNotification(models.Model):
+    id = models.AutoField(primary_key=True)
+    delay = models.IntegerField(default=1)
+    delay_unit = models.CharField(max_length=30)
+    titles = models.ManyToManyField(
+        NotificationTitles, related_name="on_install_notification_titles")
+    messages = models.ManyToManyField(
+        NotificationMessages, related_name="on_install_notification_messages")
+
+    def __str__(self):
+        return f'{str(self.delay)}-{str(self.delay_unit)}-{str(self.titles.all()[0])}'
 
 
 class EmailSubjects(models.Model):
@@ -147,6 +159,8 @@ class Project(models.Model):
         Form, related_name="daily_forms", blank=True)
     daily_notifications = models.ManyToManyField(
         Notification, related_name="daily_notifications", blank=True)
+    on_install_notifications = models.ManyToManyField(
+        OnInstallNotification, related_name="on_install_notifications", blank=True)
     daily_emails = models.ManyToManyField(
         Email, related_name="daily_emails", blank=True)
     modes = models.ManyToManyField(
