@@ -33,7 +33,7 @@ class UserAdmin(AuthUserAdmin):
 
     @admin.display(description='Projects')
     def get_projects(self, obj):
-        return "|".join([p.id for p in obj.projects.all()])
+        return "|".join([f"{p.id}" for p in obj.projects.all()])
 
 
 @admin.register(Server)

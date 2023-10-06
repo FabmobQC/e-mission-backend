@@ -61,7 +61,8 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'{str(self.day)}-{str(self.display_time)}-{str(self.titles.all()[0])}'
-    
+
+
 class OnInstallNotification(models.Model):
     id = models.AutoField(primary_key=True)
     delay = models.IntegerField(default=1)
