@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import dotenv
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
-
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,7 +35,8 @@ DEBUG = False if os.environ['DEBUG'] == '0' else True
 # Remove on prod and use ALLOWED_HOSTS
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['mamobilite.fabmobqc.ca', 'www.mamobilite.fabmobqc.ca', '159.203.62.159', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['mamobilite.fabmobqc.ca', 'www.mamobilite.fabmobqc.ca',
+                 '159.203.62.159', 'localhost', '127.0.0.1']
 
 if False if os.environ['DEBUG'] == '0' else True:
     ALLOWED_HOSTS = ['*']
@@ -49,17 +50,33 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # 3rd-party
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
+    # local
     'projects',
     'api',
-    'userprofile'
+    'userprofile',
 ]
+
+AUTH_USER_MODEL = 'userprofile.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
 }
 
 MIDDLEWARE = [
@@ -142,7 +159,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-import os
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
