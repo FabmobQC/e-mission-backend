@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
+from userprofile.utils import NoServerAvailableException
 
 from projects import models as project_models
 
@@ -88,6 +89,18 @@ class User(AbstractUser):
         self.expire_token()
         refresh = RefreshToken.for_user(self)
         return {'refresh': str(refresh), 'access': str(refresh.access_token)}
+
+    def save(self, *args, **kwargs):
+        """Overriding save method to set server url base on server max_users"""
+        if not self.server:
+            for server in Server.objects.all():
+                if server.max_users > server.users.count():
+                    self.server = server
+                    break
+        # raise error if no server is available
+        if not self.server:
+            raise NoServerAvailableException('No server available')
+        super(User, self).save(*args, **kwargs)
 
 
 class ProjectUser(models.Model):

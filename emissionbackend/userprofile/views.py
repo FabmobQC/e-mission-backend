@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.serializers import ProjectSerializer
+from .utils import NoServerAvailableException
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
 
@@ -25,7 +26,10 @@ class UserViewSet(viewsets.ModelViewSet):
                 'Please provide at less one project ID',
                 status=status.HTTP_400_BAD_REQUEST
             )
-        resp = super().create(request, *args, **kwargs)
+        try:
+            resp = super().create(request, *args, **kwargs)
+        except NoServerAvailableException:
+            return Response("No server available", status=status.HTTP_503_SERVICE_UNAVAILABLE)
         if resp.status_code == 201:
             # login user
             user = User.objects.get(email=request.data['email'])
