@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from projects.models import OnInstallNotification, Email, EmailSubjects, EmailMessages, Project, Form, FormURL, Notification, NotificationTitles, NotificationMessages, Mode, ModeTranslation, Purpose, PurposeTranslation
-from userprofile.models import UserProfile
 
 
 #### Notifications ####
@@ -24,6 +23,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
+
 
 class OnInstallNotificationSerializer(serializers.ModelSerializer):
 
@@ -84,15 +84,19 @@ class FormSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 #### Emails ####
+
+
 class EmailSubjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailSubjects
         fields = '__all__'
 
+
 class EmailMessagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailMessages
         fields = '__all__'
+
 
 class EmailSerializer(serializers.ModelSerializer):
 
@@ -111,7 +115,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     main_form = FormSerializer()
     daily_forms = FormSerializer(read_only=True, many=True)
     daily_notifications = NotificationSerializer(read_only=True, many=True)
-    on_install_notifications = OnInstallNotificationSerializer(read_only=True, many=True)
+    on_install_notifications = OnInstallNotificationSerializer(
+        read_only=True, many=True)
     modes = serializers.SerializerMethodField()
     purposes = serializers.SerializerMethodField()
 
@@ -131,12 +136,4 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = '__all__'
-
-
-#### UserProfile ####
-class UserProfileSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = UserProfile
         fields = '__all__'
