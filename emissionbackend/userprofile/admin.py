@@ -6,7 +6,7 @@ from userprofile.models import Server, User
 
 @admin.register(User)
 class UserAdmin(AuthUserAdmin):
-    list_display = ('token', 'email', 'get_projects',
+    list_display = ('token', 'email', 'get_projects', 'server',
                     'is_active', 'is_superuser')
     ordering = ('email',)
 
