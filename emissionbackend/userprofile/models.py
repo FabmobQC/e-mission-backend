@@ -14,6 +14,12 @@ class Server(models.Model):
     id = models.AutoField(primary_key=True)
     url = models.URLField(max_length=200)
     max_users = models.IntegerField(default=0)
+    project = models.ForeignKey(
+        project_models.Project,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
 
     @property
     def users(self):
@@ -104,7 +110,7 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         """Overriding save method to set server url base on server max_users"""
         if not self.server:
-            for server in Server.objects.all():
+            for server in Server.objects.filter(project=self.project):
                 if server.max_users > server.users.count():
                     self.server = server
                     break
