@@ -6,16 +6,11 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', user_views.UserViewSet, basename="users")
+router.register(r'projects', api_views.ProjectViewSet, basename="projects")
+router.register(r'projects_cfg', api_views.ConfigurationViewSet,
+                basename="projects_cfg")
 
 urlpatterns = [
-    re_path(
-        r'^projects/$',
-        api_views.getProjects
-    ),
-    re_path(
-        r'^projects/([0-9]+)$',
-        api_views.getProject
-    ),
     re_path(
         r'^projectusers/([0-9]+)$',
         api_views.ProjectUsersAPI
