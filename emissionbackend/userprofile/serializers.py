@@ -10,23 +10,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'projects', 'date_joined')
+        fields = ('username', 'email', 'password', 'project', 'date_joined')
+        required_fields = ('username', 'email', 'password', 'project')
 
         # These fields are displayed but not editable and have to be a part of 'fields' tuple
         read_only_fields = ('is_active', 'is_staff',
                             'is_superuser', 'date_joined')
 
-        # These fields are only editable (not displayed) and have to be a part of 'fields' tuple
+        # Use extra_kwargs to specify which fields configuration
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 4},
             'date_joined': {'read_only': True},
         }
-
-    projects = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Project.objects.all(),
-        required=True,
-    )
 
     def get_fields(self, *args, **kwargs):
         fields = super(UserSerializer, self).get_fields(*args, **kwargs)
@@ -98,10 +93,10 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     """[MOBILE] Login serializer for residents."""
 
-    email = serializers.EmailField(
-        label="Email",
-        allow_blank=True,
-        required=False,
+    username = serializers.CharField(
+        label="Username",
+        allow_blank=False,
+        required=True,
     )
 
     password = serializers.CharField(
@@ -109,7 +104,7 @@ class LoginSerializer(serializers.Serializer):
         required=True
     )
 
-    project_id = serializers.IntegerField(
+    project = serializers.IntegerField(
         label="Project ID",
         required=True,
     )

@@ -6,7 +6,7 @@ from userprofile.models import Server, User
 
 @admin.register(User)
 class UserAdmin(AuthUserAdmin):
-    list_display = ('token', 'email', 'project', 'server',
+    list_display = ('token', 'username', 'email', 'project', 'server',
                     'is_active', 'is_superuser')
     ordering = ('email',)
     required_fields = ('email', 'username')
@@ -15,14 +15,14 @@ class UserAdmin(AuthUserAdmin):
         if not obj:  # add_fieldsets
             fieldsets = (
                 ("Authentication", {
-                 'fields': ('email', 'password1', 'password2',)}),
+                 'fields': ('username', 'email', 'password1', 'password2',)}),
                 ("Personal ino", {
                  'fields': ('first_name', 'last_name', 'server',)}),
             )
         else:
             fieldsets = (
                 ("Authentication",
-                    {'fields': ('email', 'password',)}),
+                    {'fields': ('username', 'email', 'password',)}),
                 ("Personal ino",
                     {'fields': ('first_name', 'last_name', 'server',)}),
                 ("Permissions", {
