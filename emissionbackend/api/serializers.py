@@ -137,3 +137,15 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         exclude = ('server_url', )
+
+
+class ProjectMinimalSerializer(serializers.ModelSerializer):
+    timezone = serializers.SerializerMethodField()
+
+    def get_timezone(self, obj):
+        return obj.get_timezone_display()
+
+    class Meta:
+        model = Project
+        fields = ('name_fr', 'name_en', 'add_list', 'timezone',
+                  'user_email_mandatory')
