@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
-from userprofile.utils import NoServerAvailableException
+from userprofile.utils import NoServerAvailableException, NoUserEmailException
 
 from projects import models as project_models
 
@@ -26,19 +26,19 @@ class Server(models.Model):
 class UserManager(BaseUserManager):
     """Custom user model manager with email field as the unique identifier"""
 
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, username, password, **extra_fields):
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, username, password, **extra_fields):
         """Creating a superuser with ADMIN role"""
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        user = self.create_user(email, password, **extra_fields)
+        user = self.create_user(email, username, password, **extra_fields)
         return user
 
 
@@ -47,24 +47,36 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = "Users"
-        ordering = ['email']
+        ordering = ['username']
+        unique_together = ['username', 'email', 'project']
 
     token = models.UUIDField(
         unique=True,
         default=uuid.uuid4,
         editable=False)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(
+        unique=False,
+        max_length=255
+    )
     server = models.ForeignKey(
-        Server, on_delete=models.CASCADE, null=True, blank=True)
+        Server,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
     # user should be able to have multiple projects
-    projects = models.ManyToManyField(project_models.Project,
-                                      through='ProjectUser')
+    project = models.OneToOneField(
+        project_models.Project,
+        on_delete=models.CASCADE,
+        related_name='user',
+        null=True,
+    )
 
     objects = UserManager()
 
-    username = None
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []  # removes email from REQUIRED_FIELDS
+    USERNAME_FIELD = 'username'
+    # Username and Email should be required for login
+    REQUIRED_FIELDS = ['email']
 
     @property
     def active_server(self):
@@ -98,12 +110,10 @@ class User(AbstractUser):
                     self.server = server
                     break
         # raise error if no server is available
-        if not self.server:
+        if not self.server and not self.is_superuser:
             raise NoServerAvailableException('No server available')
+
+        # raise error if user email not provided
+        if not self.email:
+            raise NoUserEmailException('Email is required')
         super(User, self).save(*args, **kwargs)
-
-
-class ProjectUser(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(
-        project_models.Project, on_delete=models.CASCADE)
