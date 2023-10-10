@@ -40,7 +40,11 @@ class UserViewSet(viewsets.ModelViewSet):
             )
         if resp.status_code == 201:
             # login user
-            user = User.objects.get(email=request.data['email'])
+            user = User.objects.get(
+                email=request.data['email'],
+                username=request.data['username'],
+                project=request.data['project'],
+            )
             user_project = ProjectSerializer(user.project)
             return Response(
                 {
@@ -82,14 +86,16 @@ class LoginView(GenericAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         username = serializer.data.get('username', None)
+        project = serializer.data.get('project', None)
         if username:
             try:
                 user = User.objects.get(
                     username=username,
+                    project=project,
                 )
             except User.DoesNotExist:
                 return Response(
-                    f'User with email={email} and username={username} does not exist',
+                    f'Username {username} does not exist, Or {username} in project={project} does not exist',
                     status=status.HTTP_404_NOT_FOUND
                 )
             # authenticate user

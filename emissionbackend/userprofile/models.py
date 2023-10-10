@@ -64,11 +64,10 @@ class User(AbstractUser):
         null=True,
         blank=True
     )
-    # user should be able to have multiple projects
-    project = models.OneToOneField(
+    project = models.ForeignKey(
         project_models.Project,
         on_delete=models.CASCADE,
-        related_name='user',
+        related_name='users',
         null=True,
     )
 
