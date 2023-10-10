@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.serializers import ProjectSerializer
-from .utils import NoServerAvailableException
+from .utils import NoServerAvailableException, NoUserEmailException
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
 
@@ -21,25 +21,33 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
-        if not request.data.get('projects', None):
+        if not request.data.get('project', None):
             return Response(
-                'Please provide at less one project ID',
+                'Project ID is required',
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
             resp = super().create(request, *args, **kwargs)
         except NoServerAvailableException:
-            return Response("No server available", status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response(
+                "No server available",
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+        except NoUserEmailException:
+            return Response(
+                "Email is required",
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if resp.status_code == 201:
             # login user
             user = User.objects.get(email=request.data['email'])
-            user_project = ProjectSerializer(user.projects.last())
+            user_project = ProjectSerializer(user.project)
             return Response(
                 {
                     **user.refresh_token(),
                     'user_token': user.token,
-                    'user_join_date': user.date_joined,
-                    'user_server': user.active_server,
+                    'date_joined': user.date_joined,
+                    'server_url': user.active_server,
                     **user_project.data,
                 },
                 status=status.HTTP_201_CREATED
@@ -73,42 +81,47 @@ class LoginView(GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.data.get('email', None)
-        if email:
+        username = serializer.data.get('username', None)
+        if username:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(
+                    username=username,
+                )
             except User.DoesNotExist:
                 return Response(
-                    'User email does not exist',
+                    f'User with email={email} and username={username} does not exist',
                     status=status.HTTP_404_NOT_FOUND
                 )
             # authenticate user
-            user = authenticate(request, email=email,
-                                password=serializer.data.get('password', None))
+            user = authenticate(
+                request,
+                username=username,
+                password=serializer.data.get('password', None)
+            )
             if not user:
                 return Response(
                     'User email or password is incorrect',
                     status=status.HTTP_401_UNAUTHORIZED
                 )
-            if not serializer.data.get('project_id', None):
+            if not serializer.data.get('project', None):
                 return Response(
                     'Project ID is required',
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            elif not user.projects.filter(
-                    id=serializer.data.get('project_id')):
-                return Response(
-                    'Project ID is incorrect',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            user_project = ProjectSerializer(user.projects.get(
-                id=serializer.data.get('project_id')),
-            )
+            if user.project is not None:
+                if user.project.id != serializer.data.get('project'):
+                    return Response(
+                        'Project ID is incorrect',
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            user_project = ProjectSerializer(user.project)
+
             return Response(
                 {
                     **user.refresh_token(),
                     'user_token': user.token,
-                    'user_join_date': user.date_joined,
+                    'date_joined': user.date_joined,
                     'user_server': user.active_server,
                     **user_project.data,
                 },
