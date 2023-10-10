@@ -39,3 +39,4 @@ class ServerAdmin(admin.ModelAdmin):
         model = Server
         fields = '__all__'
     list_display = ('id', 'url', 'max_users')
+    required_fields = ('url', 'max_users', 'project')
