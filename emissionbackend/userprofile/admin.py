@@ -6,9 +6,10 @@ from userprofile.models import Server, User
 
 @admin.register(User)
 class UserAdmin(AuthUserAdmin):
-    list_display = ('token', 'email', 'get_projects', 'server',
+    list_display = ('token', 'email', 'project', 'server',
                     'is_active', 'is_superuser')
     ordering = ('email',)
+    required_fields = ('email', 'username')
 
     def get_fieldsets(self, request, obj=None):
         if not obj:  # add_fieldsets
@@ -30,10 +31,6 @@ class UserAdmin(AuthUserAdmin):
                  'fields': ('is_active', 'last_login', 'date_joined',)}),
             )
         return fieldsets
-
-    @admin.display(description='Projects')
-    def get_projects(self, obj):
-        return "|".join([f"{p.id}" for p in obj.projects.all()])
 
 
 @admin.register(Server)
