@@ -38,5 +38,5 @@ class ServerAdmin(admin.ModelAdmin):
     class Meta:
         model = Server
         fields = '__all__'
-    list_display = ('id', 'url', 'max_users')
+    list_display = ('id', 'url', 'project', 'max_users')
     required_fields = ('url', 'max_users', 'project')

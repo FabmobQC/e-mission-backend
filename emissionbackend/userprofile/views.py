@@ -54,7 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     'server_url': user.active_server,
                     **user_project.data,
                 },
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_200_OK
             )
         return Response(resp.data, status=status.HTTP_400_BAD_REQUEST)
 
@@ -131,7 +131,7 @@ class LoginView(GenericAPIView):
                     'user_server': user.active_server,
                     **user_project.data,
                 },
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_200_OK
             )
         return Response(
             'User email does not exist',
