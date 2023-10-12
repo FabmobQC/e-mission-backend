@@ -23,6 +23,10 @@ urlpatterns = [
             user_views.LogoutView.as_view(),
             name='logout'
             ),
+    re_path(
+        r'^get_project_cfg/([0-9]+)$',
+        api_views.getProject
+    ),
 
     re_path('', include(router.urls)),
 ]
