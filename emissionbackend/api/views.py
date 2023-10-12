@@ -20,25 +20,6 @@ class ConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        # if instance.user_email_mandatory == true:
-        if not instance.user_email_mandatory:
-            user = UserFactory.build(project=instance)
-            user.save()
-            return Response(
-                {
-                    **user.refresh_token(),
-                    'user_token': user.token,
-                    'date_joined': user.date_joined,
-                    'user_server': user.active_server,
-                    **serializer.data,
-                },
-                status=status.HTTP_200_OK
-            )
-        return super().retrieve(request, *args, **kwargs)
-
 
 @api_view(['GET'])
 def getProjects(request):
@@ -50,10 +31,29 @@ def getProjects(request):
 
 @api_view(['GET'])
 def getProject(request, id):
+    """ Return full configuration for project with user_email_mandatory false """
     if request.method == 'GET':
-        project = Project.objects.filter(id=id)
-        serializer = ProjectSerializer(project[0], many=False)
-        return Response(serializer.data)
+        try:
+            project = Project.objects.get(id=id)
+            serializer = ProjectSerializer(project)
+            if not project.user_email_mandatory:
+                user = UserFactory.build(project=project)
+                user.save()
+                return Response(
+                    {
+                        **user.refresh_token(),
+                        'user_token': user.token,
+                        'date_joined': user.date_joined,
+                        'user_server': user.active_server,
+                        **serializer.data,
+                    },
+                    status=status.HTTP_200_OK
+                )
+        except Project.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(['GET'])
