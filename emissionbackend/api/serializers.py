@@ -147,5 +147,5 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('name_fr', 'name_en', 'add_list', 'timezone',
+        fields = ('id', 'name_fr', 'name_en', 'add_list', 'timezone',
                   'user_email_mandatory')
