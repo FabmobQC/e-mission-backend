@@ -20,6 +20,15 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def list(self, request, *args, **kwargs):
+        """
+        List a queryset.
+        """
+        return Response(
+            'Not allowed: avoid listing all users for security',
+            status=status.HTTP_200_OK,
+        )
+
     def create(self, request, *args, **kwargs):
         if not request.data.get('project', None):
             return Response(
@@ -136,6 +145,12 @@ class LoginView(GenericAPIView):
         return Response(
             'User email does not exist',
             status=status.HTTP_404_NOT_FOUND
+        )
+
+    def get(self, request, *args, **kwargs):
+        return Response(
+            'Use POST method to login',
+            status=status.HTTP_200_OK,
         )
 
 
