@@ -60,6 +60,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     **user.refresh_token(),
                     'user_token': user.token,
                     'date_joined': user.date_joined,
+                    'user_email': user.email,
                     'server_url': user.active_server,
                     **user_project.data,
                 },
@@ -137,7 +138,8 @@ class LoginView(GenericAPIView):
                     **user.refresh_token(),
                     'user_token': user.token,
                     'date_joined': user.date_joined,
-                    'user_server': user.active_server,
+                    'user_email': user.email,
+                    'server_url': user.active_server,
                     **user_project.data,
                 },
                 status=status.HTTP_200_OK
